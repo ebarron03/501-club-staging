@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_27_024201) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_03_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,15 +42,67 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_27_024201) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "judges", force: :cascade do |t|
-    t.string "judge_name", null: false
-    t.string "judge_title", null: false
-    t.text "judge_bio", null: false
-    t.integer "ideathon", null: false
+  create_table "faqs", force: :cascade do |t|
+    t.integer "year", null: false
+    t.text "question", null: false
+    t.text "answer", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["year"], name: "index_faqs_on_year"
+  end
+
+  create_table "ideathons", primary_key: "year", id: :integer, default: nil, force: :cascade do |t|
+    t.string "theme"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  create_table "mentors_judges", force: :cascade do |t|
+    t.integer "year", null: false
+    t.string "name", null: false
+    t.string "photo_url"
+    t.text "bio"
+    t.boolean "is_judge", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["year"], name: "index_mentors_judges_on_year"
+  end
+
+  create_table "rules", force: :cascade do |t|
+    t.integer "year", null: false
+    t.text "rule_text", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["year"], name: "index_rules_on_year"
+  end
+
+  create_table "sponsors_partners", force: :cascade do |t|
+    t.integer "year", null: false
+    t.string "name", null: false
+    t.string "logo_url"
+    t.text "blurb"
+    t.boolean "is_sponsor", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["year"], name: "index_sponsors_partners_on_year"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "name"
+    t.string "uid"
+    t.string "provider"
+    t.string "role", default: "unauthorized", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "faqs", "ideathons", column: "year", primary_key: "year"
+  add_foreign_key "mentors_judges", "ideathons", column: "year", primary_key: "year"
+  add_foreign_key "rules", "ideathons", column: "year", primary_key: "year"
+  add_foreign_key "sponsors_partners", "ideathons", column: "year", primary_key: "year"
 end
