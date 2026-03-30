@@ -22,6 +22,34 @@ RSpec.describe "Ideathons", type: :request do
     end
   end
 
+  describe "GET /ideathons/:year/overview" do
+    it "returns a successful response" do
+      get overview_ideathon_path(ideathon)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Ideathon 2025 — Overview")
+    end
+
+    context "as an editor" do
+      before { login_as(editor) }
+
+      it "allows organizers (editors) to view the overview" do
+        get overview_ideathon_path(ideathon)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "as an unauthorized user" do
+      let(:unauthorized_user) { User.create!(email: "pending@example.com", role: "unauthorized") }
+
+      before { login_as(unauthorized_user) }
+
+      it "redirects away from the app" do
+        get overview_ideathon_path(ideathon)
+        expect(response).to redirect_to(unauthorized_path)
+      end
+    end
+  end
+
   describe "GET /ideathons/new" do
     it "returns a successful response" do
       get new_ideathon_path
