@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     post :import, on: :collection
     member do
       get :delete
+      get :overview
     end
   end
 

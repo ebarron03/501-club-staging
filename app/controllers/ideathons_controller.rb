@@ -1,12 +1,16 @@
 class IdeathonsController < ApplicationController
   before_action :require_admin, only: [ :destroy, :import ]
   before_action :set_ideathon, only: [ :show, :edit, :update, :delete, :destroy ]
+  before_action :set_ideathon_overview, only: [ :overview ]
 
   def index
     @ideathons = Ideathon.order(year: :desc)
   end
 
   def show
+  end
+
+  def overview
   end
 
   def new
@@ -59,6 +63,14 @@ class IdeathonsController < ApplicationController
 
   def set_ideathon
     @ideathon = Ideathon.find(params[:year])
+  end
+
+  def set_ideathon_overview
+    @ideathon = Ideathon.includes(:sponsors_partners, :mentors_judges, :faqs).find(params[:year])
+    @sponsors_partners = @ideathon.sponsors_partners.sort_by(&:name)
+    @judges = @ideathon.mentors_judges.select(&:is_judge?).sort_by(&:name)
+    @faqs = @ideathon.faqs.sort_by(&:id)
+    @mentors_judges_with_photos = @ideathon.mentors_judges.select { |mj| mj.photo_url.present? }.sort_by(&:name)
   end
 
   def ideathon_params
