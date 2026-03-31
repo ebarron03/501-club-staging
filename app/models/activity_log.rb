@@ -2,6 +2,7 @@ class ActivityLog < ApplicationRecord
   belongs_to :user
 
   ACTIONS = %w[added edited removed].freeze
+  
   CONTENT_TYPE_FILTERS = {
     "faqs" => {
       label: "FAQs",
@@ -32,10 +33,13 @@ class ActivityLog < ApplicationRecord
       patterns: [ "Sponsor %" ]
     }
   }.freeze
+
   DATE_RANGE_OPTIONS = [
     [ "All time", "" ],
     [ "Last 7 days", "last_7_days" ],
     [ "Custom date range", "custom" ]
+  ].freeze
+
   CONTENT_TYPES = %w[
     activity
     faqs
